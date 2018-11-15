@@ -1,0 +1,264 @@
+#time in between bass drum, 60 bpm
+spb = 2.0
+
+##key and mode
+key = :B4
+rel = :hungarian_minor
+
+
+#change to false to turn on toms
+play_toms = false
+#change to false to turn off synth background
+play_back = false
+
+#change to false to turn off bass
+play_big_bass = true
+
+#change to false to turn off bells
+play_random_bells = false
+
+#####EDIT#####
+
+_sbass = true
+
+_bg_bells = true
+
+_fg_bells = false
+
+_sweeps = false
+
+_hi_hat = true
+
+_big_boy_bass = true
+
+scal = scale(key, :harmonic_minor)
+
+#####EDIT#####
+
+
+toms = [:drum_tom_lo_soft, :drum_tom_hi_soft, :drum_tom_mid_soft]
+
+live_loop :bass do
+  if play_big_bass
+    vol = 0.7
+  else
+    vol = 0
+  end
+  with_fx :gverb do
+    sample :bd_zum, amp: vol
+    sleep spb
+  end
+end
+
+
+live_loop :toms do
+  use_random_seed Time.now.to_i
+  if play_toms
+    vol = rrand(0.3, 0.9)
+  else
+    vol = 0
+  end
+  sample choose(toms), amp: vol
+  sleep spb/8
+end
+
+
+
+live_loop :lead do
+  #use_synth
+  use_random_seed Time.now.to_i
+  if play_random_bells
+    vol = 0.1
+  else
+    vol = 0
+  end
+  with_fx :gverb do
+    16.times do
+      play choose(scale(key, rel)), amp: vol, release: 1.2
+      sleep spb/4
+    end
+  end
+end
+
+live_loop :backg do
+  use_random_seed Time.now.to_i
+  use_synth :blade
+  if play_back
+    vol = 0.35
+  else
+    vol = 0
+  end
+  rele = 2.5
+  #change rrand_i(1,4) to a number to choose wooshes per beat
+  with_fx :ixi_techno, phase: rrand_i(1,4) do
+    play (chord_degree 1, key, rel, 3), amp: vol, attack: spb/2, release: spb*1.5
+    sleep spb*2
+    play (chord_degree choose([4,5]), key, rel, 3), amp: vol, attack: spb/2, release: spb*1.5
+    sleep spb*2
+  end
+end
+
+
+
+live_loop :soft_bass do
+  with_fx :normaliser do
+    if _sbass
+      vol=  1
+    else
+      vol = 0
+    end
+    with_fx :lpf, cutoff: 75 do
+      sample :bd_fat, amp: vol
+      sleep spb*3/8
+      r = rrand_i(1,3)
+      r.times do
+        sample :bd_fat, amp: 1
+        sleep spb/(8*r)
+      end
+    end
+  end
+end
+
+live_loop :bg_bell_mel do
+  if _bg_bells
+    vol = 1
+    i = 4
+    4.times do
+      
+      use_synth :hollow
+      play scal[i], amp: vol, attack: 0.01
+      use_synth :pluck
+      play scal[i], amp: vol-0.8, attack: 0.01, release: 0.05
+      sleep spb/4
+      
+      use_synth :hollow
+      play scal[i+1], amp: vol, attack: 0.01
+      use_synth :pluck
+      play scal[i+1], amp: vol-0.8, attack: 0.01, release: 0.05
+      sleep spb/4
+      i = i-1
+      
+    end
+  else
+    sleep spb*2.0
+  end
+end
+
+live_loop :sweeps do
+  use_synth :cnoise
+  if _sweeps
+    vol = 0.1
+  else
+    vol = 0
+  end
+  with_fx :hpf do
+    play 1000, amp: vol, attack: spb/16.0, release: 0
+    sleep spb/16.0
+    play 1000, amp: vol, attack: 0, release: spb/16.0
+    sleep spb/16.0
+  end
+end
+
+live_loop :hihat do
+  use_synth :chipnoise
+  use_random_seed Time.now.to_i
+  if _hi_hat
+    vol = 0.3
+  else
+    vol = 0
+  end
+  with_fx :hpf, cutoff: rrand(75,95), cutoff_slide: spb/32.0  do |h|
+    4.times do
+      control h, cutoff: rrand(75,95)
+      play 1000, amp: vol, attack: 0.01, release: 0.01, freq_band: 12
+      sleep spb/16.0
+    end
+    if one_in(2)
+      8.times do
+        control h, cutoff: rrand(75,95)
+        play 1000, amp: vol, attack: 0.01, release: 0.01, freq_band: 12
+        sleep spb/32.0
+      end
+    else
+      8.times do
+        control h, cutoff: 110
+        play 1000, amp: vol, attack: 0.01, sustain: spb/32.0, release: 0.01, freq_band: 12
+        sleep spb/32.0
+      end
+    end
+  end
+end
+
+
+live_loop :fg_bell_mel do
+  # a = 0.25
+  # with_fx :panslicer, pan_min: -a, pan_max: a, phase: spb/16.0 do
+  with_fx :rlpf, cutoff: 80, res: 0.5, res_slide: spb/8.0, cutoff_slide: spb/8 do |l|
+    if _fg_bells
+      vol = 0.2
+    else
+      vol =0
+    end
+    
+    i = 4
+    offset = 0.00
+    4.times do
+      use_synth :pulse
+      control l, cutoff: 85, res: 0.5
+      p = play scal[i], amp: vol, attack: 0, sustain: spb/2-0.04, release: 0, note_slide: spb/32
+      sleep spb/4-offset
+      control p, note: scal[i+1]
+      control l, cutoff: 95, res: 0.9
+      sleep spb/4+offset
+      i = i-1
+    end
+  end
+  #end
+end
+
+live_loop :big_boy_bass do
+  use_random_seed Time.now.to_i
+  with_fx :nlpf, mix: 0.6, cutoff: 95 do
+    with_fx :distortion, distort: 0.25 do
+      with_fx :wobble, phase: spb, cutoff_min: rrand(50,65), cutoff_max: rrand(90,105), res: 0.5, wave: 3 do |w|
+        if _big_boy_bass
+          dvol = 0.2
+          #fvol = 0.1
+        else
+          dvol = 0
+        end
+        octaves_down = 4
+        dt = 0.2
+        
+        use_synth :dpulse
+        b = play scal[7]-octaves_down*12, amp: dvol, attack: 0, sustain: spb*3/4, release: 0, note_slide: spb/4, detune: dt
+        #use_synth :fm
+        #play scal[0]-(octaves_down)*12, amp: fvol, attack: 0.01, release: spb
+        sleep spb/2
+        control b, note: scal [0]-octaves_down*12
+        sleep spb/2
+        sleep spb/8
+        
+        use_synth :dpulse
+        play scal[5]-octaves_down*12, amp: dvol, attack: 0, release: spb/6, detune: dt
+        #use_synth :fm
+        #play scal[5]-(octaves_down)*12, amp: fvol, attack: 0, release: spb/6
+        sleep spb/8
+        sleep spb/8
+        
+        use_synth :dpulse
+        play scal[5]-octaves_down*12, amp: dvol, attack: 0, sustain: 0, release: spb/8, detune: dt
+        #use_synth :fm
+        #play scal[5]-(octaves_down)*12, amp: fvol, attack: 0, release: spb/6
+        sleep spb/8
+        
+        use_synth :dpulse
+        play scal[4]-octaves_down*12, amp: dvol, attack: 0, sustain: 0, release: spb/8, detune: dt
+        #use_synth :fm
+        #play scal[4]-(octaves_down)*12, amp: fvol, attack: 0, release: spb/6
+        sleep spb/4
+        sleep spb/4
+      end
+    end
+  end
+end

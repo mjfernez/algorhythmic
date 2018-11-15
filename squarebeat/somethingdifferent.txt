@@ -1,0 +1,108 @@
+#140 bpm
+bps = 0.428571429
+
+#determines the scale you are using by key and mode
+#changing the mode might be a little weird since the
+#piano part strongly infers minor
+key = [:A3, :A4, :A5]
+feel = :minor_pentatonic
+
+#change to increase initial chain of notes to play
+funkiness = 2
+
+#increase to increase chain of notes to play
+#warning: over 10 might be too many notes, might crash program
+max_funkiness = 6
+
+#change to false to turn off bass drum/snare
+_bass = true
+
+#change to false to turn off cymbal
+_cym = true
+
+live_loop :bass do
+  if _bass
+    vol = 0.7
+    slo = 0.2
+  else
+    vol = 0
+    slo = 0
+  end
+  if funkiness <= 3
+    4.times do
+      sample :drum_heavy_kick, amp: vol
+      sleep bps
+    end
+  else
+    sample :drum_heavy_kick, amp: vol
+    sleep bps
+    sample :drum_snare_hard, amp: vol - slo
+    sleep bps
+    sample :drum_heavy_kick, amp: vol
+    sleep bps/2
+    sample :drum_heavy_kick, amp: vol
+    sleep bps/2
+    sample :drum_snare_hard, amp: vol - slo
+    sleep bps
+  end
+end
+
+live_loop :squares do
+  use_synth :square
+  16.times do
+    r = rrand_i(1,funkiness)
+    print r
+    r.times do
+      play choose(scale(choose(key), feel)), amp: 0.8, release: 0.1
+      sleep bps/r
+    end
+  end
+end
+
+live_loop :cym do
+  if _cym
+    vol = 0.8
+  else
+    vol = 0
+  end
+  with_fx :flanger, wave: 4 do
+    2.times do
+      sample :drum_cymbal_closed, amp: vol, cutoff: rrand(60,120)
+      sleep bps/2
+    end
+    4.times do
+      sample :drum_cymbal_closed, amp: vol, cutoff: rrand(60,120)
+      sleep bps/4
+    end
+  end
+end
+
+
+live_loop :piani do
+  scal = scale(key[0]-12, feel, num_octaves: 2)
+  if true
+    with_fx :reverb do
+      use_synth :piano
+      play_chord [scal[3], scal[5], scal[8]], sustain: bps*4
+      sleep bps*4
+      play_chord [scal[2], scal[4], scal[7]], sustain: bps*4
+      sleep bps*4
+      play_chord [scal[2], scal[4]-1, scal[7]], sustain: bps*4
+      sleep bps*4
+      play_chord [scal[2], scal[4]-2, scal[7]], sustain: bps*4
+      sleep bps*4
+    end
+  else
+    sleep bps*4
+  end
+end
+
+live_loop :revcym do
+  if one_in(2)
+    sample "~/Desktop/algorythmic/squarebeat/crash.wav", rate: -1
+    funkiness = rrand_i(2, max_funkiness)
+    
+  end
+  
+  sleep bps*16
+end

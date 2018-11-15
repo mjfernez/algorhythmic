@@ -1,0 +1,284 @@
+bps = 0.15
+##modes to choose scale from
+modes = [:harmonic_minor, :minor, :hex_aeolian, :melodic_minor, :hungarian_minor]
+roots = [:A3, :A4, :A5]
+
+#turn scale background on/off
+scal_on = true
+
+#turn snare on/off
+snar_on = true
+
+#turn background pitter-patter bass drum on/off
+drive_bass = true
+
+#turn foreground bass on/off
+main_bass = true
+
+#turn woosh and weird wobble sound sample on/off
+fx_on = true
+
+#turn chirp noise on/off
+noiz1_on = false
+
+#turn wiggle snare on/off
+noiz2_on = true
+
+#turn background harmony on/off
+sing_on = true
+
+#turn melody on/off
+over_on = true
+
+sing_mode = 0
+
+
+live_loop :bas_drum do
+  if drive_bass
+    vol = 1
+  else
+    vol = 0
+  end
+  c = rrand(65, 100)
+  with_fx :lpf, cutoff: c do
+    with_fx :krush, gain: 1 do
+      4.times do
+        sample :bd_fat, amp: vol
+        sleep bps/2
+      end
+    end
+  end
+end
+
+live_loop :xtra_bass do
+  if main_bass
+    sample :bd_haus, amp: 1
+  end
+  sleep bps*2
+end
+
+live_loop :spook do
+  if fx_on
+    if(one_in(2))
+      sample :ambi_dark_woosh
+    end
+    if(one_in(3))
+      wubble bps/3, 4, choose([true,false]), rrand(80, 95), 32
+    end
+  end
+  sleep bps*32
+  
+end
+
+live_loop :snar do
+  if snar_on
+    vol = 0.7
+    svol = 0.5
+  else
+    vol = 0
+    svol = 0
+  end
+  use_synth :cnoise
+  with_fx :hpf do
+    4.times do
+      if (one_in(2))
+        play 80, amp: svol, release: 0.05
+      end
+      sleep bps/2
+    end
+    play 80, amp: vol, release: 0.1
+    4.times do
+      if (one_in(2))
+        play 80, amp: svol, release: 0.05
+      end
+      sleep bps/2
+    end
+    4.times do
+      if (one_in(2))
+        play 80, amp: svol, release: 0.05
+      end
+      sleep bps/2
+    end
+  end
+  with_fx :rhpf, amp: vol, res: 0.8 do
+    play 80, release: 0.2
+  end
+  sleep bps*2
+end
+
+define :swap do |scal|
+  nscal = [] * 8
+  i = 0
+  8.times do
+    nscal[i] = scal[7-i]
+    i = i + 1
+  end
+  return nscal
+end
+
+live_loop :noiz1 do
+  if noiz1_on
+    sleep bps*2
+    if(one_in(2))
+      c = choose([1,2,4])
+      c.times do
+        with_fx :compressor do
+          noise_1 rrand(3,4)
+        end
+        sleep bps
+      end
+    end
+    sleep bps*6
+  else
+    sleep bps*8
+  end
+end
+
+live_loop :noiz2 do
+  sleep bps*2
+  if noiz2_on
+    wubble bps/(rrand_i(1,4)), rrand_i(0,4), false, 100, 2
+    use_synth :saw
+    #with_fx :lpf do
+    #  play choose([:A2, :Ab2]), release: 0.2
+    #end
+  end
+  sleep bps*2
+end
+
+live_loop :scales do
+  if one_in(4)
+    r = 2
+  else
+    r = 1
+  end
+  if scal_on
+    vol = 1
+  else
+    vol = 0
+  end
+  use_synth :dull_bell
+  with_fx :wobble, amp: vol, wave: 3, phase: bps/r do
+    #with_fx :rlpf, cutoff: rrand(60,100), res: 0.7 do
+    r.times do
+      sc = scale(choose(roots), choose(modes))
+      if one_in(2)
+        play_pattern_timed sc, bps/r, release: 0.1, cutoff: rrand(60,100)
+      else
+        play_pattern_timed swap(sc), bps/r, release: 0.1, cutoff: rrand(60,100)
+      end
+    end
+    #end
+  end
+end
+
+live_loop :ostenato do
+  use_synth :chiplead
+  if sing_mode == 0
+    soprano 0.7
+  end
+  if sing_mode == 1
+    with_fx :panslicer, phase: bps, wave: 3 do
+      soprano 0.5
+    end
+  end
+  if sing_mode == 2
+    with_fx :ixi_techno, phase: bps*2 do
+      with_fx :ring_mod, freq: rrand_i(30,60) do
+        soprano 0.4
+      end
+    end
+  end
+end
+
+live_loop :singahs do
+  l = 12
+  if sing_on
+    sing :A5, l
+    sing :C6, l
+    sleep bps*16
+    sing :G5, l
+    sing :B5, l
+    sleep bps*16
+    sing :G5, l
+    sing :E5, l
+    sleep bps*16
+    sing :B5, l
+    sing :Ab5, l
+    sleep bps*16
+    sing :A5, l
+    sleep bps*16
+  else
+    sleep bps*16
+  end
+end
+
+define :noise_1 do |rat|
+  r = 0.1
+  att = 0.1
+  with_fx :nrlpf, freq: 88, res: 0.7 do
+    with_fx :distortion, distort: 0.9 do
+      sample :elec_bell, amp: 0.5, rate: rat
+      use_synth :chipbass
+      play 88, amp: 0.1, attack: att, release: r
+    end
+  end
+end
+
+define :soprano do |v|
+  sc = scale( :A4, modes[1])
+  if over_on
+    vol = v
+  else
+    vol = 0
+  end
+  i=7
+  s = play sc[0], amp: vol, sustain: bps*16*5, note_slide: 0.075
+  5.times do
+    control s, note: sc[0]
+    sleep bps*4
+    control s, note: sc[4]
+    sleep bps*4
+    control s, note: sc[i]
+    sleep bps*2
+    control s, note: sc[i-1]
+    sleep bps*2
+    control s, note: sc[i-2]
+    sleep bps*2
+    control s, note: sc[i-3]
+    sleep bps*2
+    i = i - 1
+    if i == 4
+      sc = scale( :A4, modes[0])
+    end
+  end
+end
+
+
+define :wubble do |ph, wav, fad, freq, len|
+  use_synth :cnoise
+  with_fx :wobble, wave: 3, phase: ph do
+    with_fx :rlpf, cutoff: freq do
+      if fad
+        play 70, amp: 0.7, attack: bps*len
+      else
+        play 70, amp: 0.7, release: bps*len
+      end
+      
+    end
+  end
+end
+
+define :sing do |pitch, len|
+  with_fx :gverb do
+    with_fx :compressor do
+      with_fx :rlpf, cutoff: 89, res: 0.7 do
+        with_fx :vowel do
+          with_fx :slicer, amp_min: 0.2, amp_max: 0.9 , phase: 0.1, wave: 3 do
+            play pitch, attack: 1, release: bps*len
+          end
+        end
+      end
+    end
+  end
+end

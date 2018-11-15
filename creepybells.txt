@@ -1,0 +1,78 @@
+#time in between bass drum, 60 bpm
+bps = 2.0
+
+##key and mode
+key = :B4
+rel = :hungarian_minor
+
+
+#change to false to turn on toms
+play_toms = false
+
+#change to false to turn off synth background
+play_back = false
+
+#change to false to turn off bass
+play_bass = true
+
+#change to false to turn off bells
+play_bells = true
+
+toms = [:drum_tom_lo_soft, :drum_tom_hi_soft, :drum_tom_mid_soft]
+
+live_loop :bass do
+  if play_bass
+    vol = 0.7
+  else
+    vol = 0
+  end
+  with_fx :gverb do
+    sample :bd_zum, amp: vol
+    sleep bps
+  end
+end
+
+
+live_loop :toms do
+  if play_toms
+    vol = rrand(0.3, 0.9)
+  else
+    vol = 0
+  end
+  sample choose(toms), amp: vol
+  sleep bps/8
+end
+
+
+
+live_loop :lead do
+  #use_synth
+  if play_bells
+    vol = 0.1
+  else
+    vol = 0
+  end
+  with_fx :gverb do
+    16.times do
+      play choose(scale(key, rel)), amp: vol, release: 1.2
+      sleep bps/4
+    end
+  end
+end
+
+live_loop :backg do
+  use_synth :blade
+  if play_back
+    vol = 0.35
+  else
+    vol = 0
+  end
+  rele = 2.5
+  #change rrand_i(1,4) to a number to choose wooshes per beat
+  with_fx :ixi_techno, phase: rrand_i(1,4) do
+    play (chord_degree 1, key, rel, 3), amp: vol, attack: bps/2, release: bps*1.5
+    sleep bps*2
+    play (chord_degree choose([4,5]), key, rel, 3), amp: vol, attack: bps/2, release: bps*1.5
+    sleep bps*2
+  end
+end

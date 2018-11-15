@@ -1,0 +1,102 @@
+#best performed one loop at a time
+#sounds/feels best with headphones
+##120 bpm
+bps = 0.5
+
+#change key and mode
+key= [:Bb4]
+scl = [:major]
+
+#turns on:bass,melody,harmony,ostenato
+switch = [true,true, false, false]
+
+
+live_loop :boom do
+  if switch[0]
+    vol = 1
+    8.times do
+      with_fx :band_eq, freq: 100  do
+        sample :bd_boom, amp: vol
+        sleep bps
+      end
+    end
+  else
+    sleep bps*8
+  end
+end
+
+live_loop :sing do
+  if switch[1]
+    vol = 0.1
+    use_synth :square
+    with_fx :gverb, room: 50 do
+      with_fx :lpf, freq: 200 do
+        play scale(key[0], scl[0])[0], amp: vol, attack: bps*1.5, release: bps*2.5
+        sleep bps*2
+        play scale(key[0], scl[0])[4], amp: vol, attack: bps*1.5, release: bps*2.5
+        sleep bps*2
+        play scale(key[0], scl[0])[3], amp: vol, attack: bps*1.5, release: bps*2.5
+        sleep bps*2
+        play scale(key[0], scl[0])[2], amp: vol, attack: bps*1.5, release: bps*2.5
+        sleep bps*2
+      end
+    end
+  else
+    sleep bps*8
+  end
+  
+end
+
+
+live_loop :harmony do
+  if switch[2]
+    vol = 0.1
+    use_synth :square
+    
+    with_fx :gverb, room: 50 do
+      with_fx :lpf, freq: 200 do
+        play scale(key[0], scl[0])[choose([2,3,4])], amp: vol, attack: bps*1.5, release: bps*2.5
+        sleep bps*2
+        play scale(key[0], scl[0])[choose([0,2,7])], amp: vol, attack: bps*1.5, release: bps*2.5
+        sleep bps*2
+        play scale(key[0], scl[0])[choose([1,5])], amp: vol, attack: bps*1.5, release: bps*2.5
+        sleep bps*2
+        play scale(key[0], scl[0])[choose([5,7])], amp: vol, attack: bps*1.5, release: bps*2.5
+        sleep bps*2
+      end
+    end
+    
+  else
+    sleep bps*8
+  end
+  
+end
+
+
+live_loop :angels do
+  if switch[3]
+    vol = 0.1
+    use_synth :square
+    with_fx :slicer, wave: 1, phase: 0.1 do
+      with_octave 1 do
+        with_fx :gverb, room: 50 do
+          with_fx :lpf, freq: 200 do
+            play scale(key[0], scl[0])[7], amp: vol, attack: bps*1.5, release: bps*2.5
+            sleep bps*2
+            play scale(key[0], scl[0])[6], amp: vol, attack: bps*1.5, release: bps*2.5
+            sleep bps*2
+            play scale(key[0], scl[0])[5], amp: vol, attack: bps*1.5, release: bps*2.5
+            sleep bps*2
+            play scale(key[0], scl[0])[4], amp: vol, attack: bps*1.5, release: bps*2.5
+            sleep bps*2
+          end
+        end
+      end
+    end
+    
+  else
+    sleep bps*8
+  end
+end
+
+

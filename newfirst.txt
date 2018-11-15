@@ -1,0 +1,25 @@
+live_loop :nuts do
+  use_synth :prophet
+  play :D4, amp: 0.5, pan: -1, release: 0.1
+  sample :bd_haus, rate: 1, amp: 0.65
+  sleep 0.1
+  play :F4, amp: 0.5, pan: -0.5, release: 0.1
+  sleep 0.1
+  play :A4, amp: 0.5, pan: -0.25, release: 0.1
+  sleep 0.1
+  play :Bb4, amp: 0.5, pan: 0, release: 0.2
+  sleep 0.1
+  sample :bd_haus, rate: 1, amp: 0.65
+  play :A4, amp: 0.5, pan: 0.25, release: 0.1
+  sleep 0.1
+  play :F4, amp: 0.5, pan: 0.5, release: 0.1
+  sleep 0.1
+  play :D4, amp: 0.5, pan: 1, release: 0.1
+  sleep 0.2
+end
+live_loop :back do
+  sample :ambi_lunar_land
+  sleep 0.8*16
+end
+
+# Loading previous buffer contents. Please wait...

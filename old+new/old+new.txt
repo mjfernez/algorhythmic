@@ -1,0 +1,187 @@
+#bps = 0.461538462
+
+##120 BPM
+bps = 0.5
+
+#keys to switch between
+key = [:E4, :Gb4]
+
+##mode
+feel = :minor_pentatonic
+
+#second key (switch to make the other key go first)
+root = 1
+
+live_loop :beat do
+  vol = 0.7
+  toms = [:drum_tom_hi_soft, :drum_tom_hi_hard, :drum_tom_mid_soft, :drum_tom_mid_hard, :drum_tom_lo_soft, :drum_tom_lo_hard]
+  
+  30.times do
+    sample :drum_bass_soft, amp: vol
+    sleep bps/4
+    sleep bps/4
+    sample :drum_cymbal_closed, amp: vol
+    sleep bps/4
+    sample :drum_cymbal_closed, amp: vol
+    sleep bps/4
+  end
+  
+  sample :drum_bass_soft
+  8.times do
+    sample choose(toms), amp: rrand(0.3, 0.9)
+    sleep bps/4
+  end
+  sample "~/Desktop/algorythmic/old+new/crash.wav"
+end
+
+live_loop :keychange do
+  if root == 1
+    root = 0
+  else
+    root = 1
+  end
+  sleep bps*32
+end
+
+live_loop :dots do
+  
+  with_fx :echo, mix: 0.3 do
+    2.times do
+      play scale(key[root], feel)[3], amp: 0.5, release: 0.1
+      sleep bps
+      play scale(key[root], feel)[2], amp: 0.5, release: 0.1
+      sleep bps
+      play scale(key[root], feel)[1], amp: 0.5, release: 0.1
+      sleep bps/4
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps/4
+      sleep bps/4
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps
+      
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps/4
+      play scale(key[root], feel)[1], amp: 0.5, release: 0.1
+      sleep bps/4
+      sleep bps/4
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps/4
+      play scale(key[root], feel)[1], amp: 0.5, release: 0.1
+      sleep bps/4
+      sleep bps/4
+      play scale(key[root], feel)[2], amp: 0.5, release: 0.1
+      sleep bps/2
+      play scale(key[root], feel)[3], amp: 0.5, release: 0.1
+      sleep bps
+      sleep bps/2
+      sleep bps/4
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps/2
+      
+      play scale(key[root], feel)[3], amp: 0.5, release: 0.1
+      sleep bps
+      play scale(key[root], feel)[2], amp: 0.5, release: 0.1
+      sleep bps
+      play scale(key[root], feel)[1], amp: 0.5, release: 0.1
+      sleep bps/4
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps/4
+      sleep bps/4
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps
+      
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps/4
+      play scale(key[root], feel)[1], amp: 0.5, release: 0.1
+      sleep bps/4
+      sleep bps/4
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps/4
+      play scale(key[root], feel)[1], amp: 0.5, release: 0.1
+      sleep bps/4
+      sleep bps/4
+      play scale(key[root], feel)[2], amp: 0.5, release: 0.1
+      sleep bps/2
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps
+      sleep bps/2
+      sleep bps/4
+      play scale(key[root], feel)[0], amp: 0.5, release: 0.1
+      sleep bps/2
+    end
+  end
+end
+
+
+live_loop :bass do
+  vol = 0.9
+  use_synth :chipbass
+  with_fx :lpf, cutoff: 80 do
+    with_fx :ring_mod, freq: 30 do
+      with_octave -2   do
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps
+        sleep bps*3/4
+        
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[1], amp: vol, release: 0.2
+        sleep bps/4
+        sleep bps/4
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[1], amp: vol, release: 0.2
+        sleep bps/4
+        sleep bps/4
+        play scale(key[root], feel)[2], amp: vol, release: 0.2
+        sleep bps/2
+        play scale(key[root], feel)[3], amp: vol, release: 0.2
+        sleep bps
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[1], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/2
+        
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps
+        sleep bps*3/4
+        
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[1], amp: vol, release: 0.2
+        sleep bps/4
+        sleep bps/4
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[1], amp: vol, release: 0.2
+        sleep bps/4
+        sleep bps/4
+        play scale(key[root], feel)[2], amp: vol, release: 0.2
+        sleep bps/2
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[1], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/4
+        play scale(key[root], feel)[0], amp: vol, release: 0.2
+        sleep bps/2
+      end
+    end
+    
+  end
+end

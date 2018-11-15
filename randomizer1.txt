@@ -1,0 +1,122 @@
+#alien drumset
+live_loop :nuts do
+  use_synth :tb303
+  play :D4, amp: 0.3, pan: -1, release: 0.1, cutoff: rrand(60,120)
+  sample :bd_haus, rate: 1, amp: 0.5
+  sleep 0.1
+  play :F4, amp: 0.3, pan: -0.5, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  play :A4, amp: 0.3, pan: -0.25, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  play :Bb4, amp: 0.3, pan: 0, release: 0.2, cutoff: rrand(60,120)
+  sleep 0.1
+  sample :bd_haus, rate: 1, amp: 0.5
+  play :A4, amp: 0.3, pan: 0.25, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  play :F4, amp: 0.3, pan: 0.5, release: 0.1, cutoff: rrand(60,120)
+  #sample :bd_haus, rate: 1, amp: 0.25
+  sleep 0.1
+  play :D4, amp: 0.3, pan: 1, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  sleep 0.1
+
+  use_synth :tb303
+  play :D4, amp: 0.3, pan: -1, release: 0.1, cutoff: rrand(60,120)
+  sample :bd_haus, rate: 1, amp: 0.5
+  sleep 0.1
+  play :F4, amp: 0.3, pan: -0.5, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  play :A4, amp: 0.3, pan: -0.25, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  play :Bb4, amp: 0.3, pan: 0, release: 0.2, cutoff: rrand(60,120)
+  sleep 0.1
+  sample :bd_haus, rate: 1, amp: 0.5
+  play :A4, amp: 0.3, pan: 0.25, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  #sample :bd_haus, rate: 1, amp: 0.5
+  play :F4, amp: 0.3, pan: 0.5, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  #sample :bd_haus, rate: 1, amp: 0.25
+  play :D4, amp: 0.3, pan: 1, release: 0.1, cutoff: rrand(60,120)
+  sleep 0.1
+  sleep 0.1
+end
+#FX
+live_loop :back do
+  sample :ambi_lunar_land
+  sleep 0.8*16
+end
+
+#singers
+live_loop :sing do
+  use_synth :dpulse
+  r=0.8*4
+  with_fx :gverb do
+    play :D5, amp: 0.2, attack: 0.4, release: r, pan: rrand(-1,1)
+    sleep r
+    play :Bb4, amp: 0.2, attack: 0.4, release: r, pan: rrand(-1,1)
+    sleep r
+    play :C5, amp: 0.2, attack: 0.4, release: r, pan: rrand(-1,1)
+    sleep r
+    play :D5, amp: 0.2, attack: 0.4, release: r, pan: rrand(-1,1)
+    sleep r
+  end
+end
+
+#backup_singers
+live_loop :harmn do
+  
+  good_fx = [:flanger,:ixi_techno, :tanh]
+  use_synth :dpulse
+  a=0.1
+  r = 0.8*0.25
+  if one_in(2)
+    2.times do
+              #to choose effect, yourself, replace with :<effect>
+      with_fx choose(good_fx) do
+     #with_fx :flanger do
+        play :A5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :G5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :F5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :E5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+
+        play :F5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :E5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :F5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :E5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+      end
+    end
+  else
+    2.times do
+      with_fx choose(good_fx) do
+        play :F5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :E5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :F5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :E5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+
+
+        play :A5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :G5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :F5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+        play :E5, amp: 0.3, attack: a, release: r, pan: rrand(-1,1)
+        sleep r
+      end
+    end
+  end
+end
+
